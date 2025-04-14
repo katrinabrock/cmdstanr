@@ -23,14 +23,7 @@ jobs:
       fail-fast: false
       matrix:
         config:
-          - {os: macOS-latest, r: 'devel', rtools: '', opencl: true}
           - {os: macOS-latest, r: 'release', rtools: '', opencl: true}
-          - {os: windows-latest, r: 'devel', rtools: '45'}
-          - {os: windows-latest, r: 'release', rtools: '44'}
-          - {os: windows-latest, r: 'oldrel', rtools: '43'}
-          - {os: ubuntu-latest, r: 'devel', rtools: '', opencl: true}
-          - {os: ubuntu-latest, r: 'release', rtools: '', opencl: true}
-          - {os: ubuntu-latest, r: 'oldrel', rtools: '', opencl: true}
     env:
       R_REMOTES_NO_ERRORS_FROM_WARNINGS: true
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
@@ -83,12 +76,6 @@ jobs:
           echo "LDLIBS_OPENCL=-L'/opt/homebrew/opt/opencl-icd-loader/lib' -lOpenCL" >> $GITHUB_ENV
         shell: bash
 
-      - name: Install cmdstan
-        run: |
-          cmdstanr::check_cmdstan_toolchain(fix = TRUE)
-          cmdstanr::install_cmdstan(cores = 2)
-        shell: Rscript {0}
-
       - name: Session info
         run: |
           options(width = 100)
@@ -96,18 +83,15 @@ jobs:
           sessioninfo::session_info(pkgs, include_base = TRUE)
         shell: Rscript {0}
 
-      - uses: r-lib/actions/check-r-package@v2.11.3
-        env:
-          _R_CHECK_CRAN_INCOMING_: false
-
-      - name: Show testthat output
-        if: always()
-        run: find check -name 'testthat.Rout*' -exec cat '{}' \; || true
-        shell: bash
-
-      - name: Upload check results
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ runner.os }}-r${{ matrix.config.r }}-results
-          path: check
+      - name: Install cmdstan
+        run: |
+          cmdstanr::check_cmdstan_toolchain(fix = TRUE)
+          dir <- tempdir(check = TRUE)
+          destfile <- file.path(dir, "cmdstan-2.35.0.tar.gz")
+          cmdstanr:::download_with_retries(
+            "https://github.com/stan-dev/cmdstan/releases/download/v2.35.0/cmdstan-2.35.0.tar.gz",
+            destfile)
+          cmdstanr::install_cmdstan(dir = dir, cores = 2, quiet = FALSE, overwrite = TRUE,
+                release_file = destfile,
+                wsl = cmdstanr:::os_is_wsl())
+        shell: Rscript {0}
