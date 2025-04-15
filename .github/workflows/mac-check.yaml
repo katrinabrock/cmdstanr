@@ -75,6 +75,11 @@ jobs:
           # instead of Apple's GPU OpenCL - which does not support double precision
           echo "LDLIBS_OPENCL=-L'/opt/homebrew/opt/opencl-icd-loader/lib' -lOpenCL" >> $GITHUB_ENV
         shell: bash
+      - name: Install cmdstan
+        run: |
+          cmdstanr::check_cmdstan_toolchain(fix = TRUE)
+          cmdstanr::install_cmdstan(cores = 2)
+        shell: Rscript {0}
 
       - name: Session info
         run: |
@@ -83,7 +88,12 @@ jobs:
           sessioninfo::session_info(pkgs, include_base = TRUE)
         shell: Rscript {0}
 
-      - name: Install cmdstan
+      - name: Failing test script
+        run: |
+          testthat::test_file("tests/testthat/test-install.R", package="cmdstanr")
+        shell: Rscript {0}
+
+      - name: Failing Test Isolated
         run: |
           dir <- tempdir(check = TRUE)
           destfile <- file.path(dir, "cmdstan-2.35.0.tar.gz")
