@@ -85,7 +85,6 @@ jobs:
 
       - name: Install cmdstan
         run: |
-          cmdstanr::check_cmdstan_toolchain(fix = TRUE)
           dir <- tempdir(check = TRUE)
           destfile <- file.path(dir, "cmdstan-2.35.0.tar.gz")
           cmdstanr:::download_with_retries(
