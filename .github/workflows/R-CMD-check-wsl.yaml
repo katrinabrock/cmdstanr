@@ -75,6 +75,8 @@ jobs:
         run: |
           testthat::test_file(
             'tests/testthat/test-model-compile-user_header.R',
-            package = 'cmdstanr'
+            package = 'cmdstanr',
+            stop_on_failure = TRUE
           )
+          
         shell: Rscript {0}

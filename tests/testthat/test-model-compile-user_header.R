@@ -2,11 +2,7 @@ skip_if(os_is_macos())
 
 file_that_exists <- "placeholder_exists"
 file_that_doesnt_exist <- "placeholder_doesnt_exist"
-file.create(file_that_exists)
-withr::defer(
-  if (file.exists(file_that_exists)) file.remove(file_that_exists),
-  teardown_env()
-)
+withr::local_file(file_that_exists)
 
 make_local_orig <- cmdstan_make_local()
 cmdstan_make_local(cpp_options = list("PRECOMPILED_HEADERS" = "false"))
@@ -140,9 +136,10 @@ test_that("cmdstan_model works with user_header with mock", {
 
 test_that("user_header precedence order is correct", {
 
-  tmp_files <- sapply(1:3, function(n) wsl_safe_path(absolute_path(tempfile(fileext = ".hpp"))))
+ tmp_files <- sapply(1:3, function(n) wsl_safe_path(absolute_path(tempfile(fileext = ".hpp"))))
+ print(tmp_files)
   sapply(tmp_files, function(filename) cat(hpp, file = filename, sep = "\n"))
-  withr::defer(lapply(tmp_files, function(filename) file.remove(filename)))
+  withr::defer(sapply(tmp_files, function(filename) file.remove(filename)))
 
   with_mocked_cli(
     compile_ret = list(status = 1),
@@ -165,11 +162,11 @@ test_that("user_header precedence order is correct", {
   # cpp_options[['user_header']] == tmp_files[3] <- ignored
   # tmp_files[2] is not stored
   expect_equal(
-    which(mod$cpp_options()[['USER_HEADER']] == tmp_files),
+    which(!!mod$cpp_options()[['USER_HEADER']] == tmp_files),
     1
   )
   expect_equal(
-    which(mod$cpp_options()[['user_header']] == tmp_files),
+    which(!!mod$cpp_options()[['user_header']] == tmp_files),
     3
   )
 
@@ -192,11 +189,11 @@ test_that("user_header precedence order is correct", {
   # cpp_options[['user_header']] == tmp_files[3] <- ignored
   # tmp_files[2] is not stored
   expect_equal(
-    which(mod$cpp_options()[["USER_HEADER"]] == tmp_files),
+    which(@@mod$cpp_options()[["USER_HEADER"]] == tmp_files),
     2
   )
   expect_equal(
-    which(mod$cpp_options()[["user_header"]] == tmp_files),
+    which(!!mod$cpp_options()[["user_header"]] == tmp_files),
     3
   )
 
@@ -216,11 +213,11 @@ test_that("user_header precedence order is correct", {
   )
   # Same as above
   expect_equal(
-    which(mod$cpp_options()[["USER_HEADER"]] == tmp_files),
+    which(!!(mod$cpp_options()[["USER_HEADER"]]) == tmp_files),
     2
   )
   expect_equal(
-    which(mod$cpp_options()[["user_header"]] == tmp_files),
+    which(!!mod$cpp_options()[["user_header"]] == tmp_files),
     3
   )
 
