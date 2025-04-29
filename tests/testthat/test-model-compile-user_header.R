@@ -135,9 +135,9 @@ test_that("cmdstan_model works with user_header with mock", {
 })
 
 test_that("user_header precedence order is correct", {
-
- tmp_files <- sapply(1:3, function(n) wsl_safe_path(absolute_path(tempfile(fileext = ".hpp"))))
- print(tmp_files)
+  tmp_files <- sapply(1:3, function(n) tempfile(fileext = ".hpp"))))
+  print(tmp_files)
+  w_tmp_files <- sapply(tmp_files, function(f) wsl_safe_path(absolute_path(f)))
   sapply(tmp_files, function(filename) cat(hpp, file = filename, sep = "\n"))
   withr::defer(sapply(tmp_files, function(filename) file.remove(filename)))
 
@@ -163,11 +163,11 @@ test_that("user_header precedence order is correct", {
   # cpp_options[['user_header']] == tmp_files[3] <- ignored
   # tmp_files[2] is not stored
   expect_equal(
-    which(!!(mod$cpp_options()[['USER_HEADER']]) == tmp_files),
+    which(!!(mod$cpp_options()[['USER_HEADER']]) == t_tmpfiles),
     1
   )
   expect_equal(
-    which(!!(mod$cpp_options()[['user_header']]) == tmp_files),
+    which(!!(mod$cpp_options()[['user_header']]) == t_tmpfiles),
     3
   )
 
@@ -191,11 +191,11 @@ test_that("user_header precedence order is correct", {
   # cpp_options[['user_header']] == tmp_files[3] <- ignored
   # tmp_files[2] is not stored
   expect_equal(
-    which(!!(mod$cpp_options()[["USER_HEADER"]]) == tmp_files),
+    which(!!(mod$cpp_options()[["USER_HEADER"]]) == t_tmpfiles),
     2
   )
   expect_equal(
-    which(!!(mod$cpp_options()[["user_header"]]) == tmp_files),
+    which(!!(mod$cpp_options()[["user_header"]]) == t_tmpfiles),
     3
   )
 
@@ -216,11 +216,11 @@ test_that("user_header precedence order is correct", {
   print(mod$cpp_options())
   # Same as above
   expect_equal(
-    which(!!(mod$cpp_options()[["USER_HEADER"]]) == tmp_files),
+    which(!!(mod$cpp_options()[["USER_HEADER"]]) == t_tmpfiles),
     2
   )
   expect_equal(
-    which(!!(mod$cpp_options()[["user_header"]]) == tmp_files),
+    which(!!(mod$cpp_options()[["user_header"]]) == t_tmpfiles),
     3
   )
 
