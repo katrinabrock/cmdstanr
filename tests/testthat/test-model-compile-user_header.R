@@ -156,6 +156,7 @@ test_that("user_header precedence order is correct", {
       )
     }, "User header specified both")
   )
+  print(mod$cpp_options())
   
   # In this case:
   # cpp_options[['USER_HEADER']] == tmp_files[1] <- actually used
@@ -184,6 +185,7 @@ test_that("user_header precedence order is correct", {
       )
     }, "User header specified both")
   )
+  print(mod$cpp_options())
   # In this case:
   # cpp_options[['USER_HEADER']] == tmp_files[2] <- actually used
   # cpp_options[['user_header']] == tmp_files[3] <- ignored
@@ -211,6 +213,7 @@ test_that("user_header precedence order is correct", {
       )
     }, "User header specified both")
   )
+  print(mod$cpp_options())
   # Same as above
   expect_equal(
     which(!!(mod$cpp_options()[["USER_HEADER"]]) == tmp_files),
