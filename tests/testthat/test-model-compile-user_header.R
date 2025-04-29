@@ -162,11 +162,11 @@ test_that("user_header precedence order is correct", {
   # cpp_options[['user_header']] == tmp_files[3] <- ignored
   # tmp_files[2] is not stored
   expect_equal(
-    which(!!mod$cpp_options()[['USER_HEADER']] == tmp_files),
+    which(!!(mod$cpp_options()[['USER_HEADER']]) == tmp_files),
     1
   )
   expect_equal(
-    which(!!mod$cpp_options()[['user_header']] == tmp_files),
+    which(!!(mod$cpp_options()[['user_header']]) == tmp_files),
     3
   )
 
@@ -189,11 +189,11 @@ test_that("user_header precedence order is correct", {
   # cpp_options[['user_header']] == tmp_files[3] <- ignored
   # tmp_files[2] is not stored
   expect_equal(
-    which(!!mod$cpp_options()[["USER_HEADER"]] == tmp_files),
+    which(!!(mod$cpp_options()[["USER_HEADER"]]) == tmp_files),
     2
   )
   expect_equal(
-    which(!!mod$cpp_options()[["user_header"]] == tmp_files),
+    which(!!(mod$cpp_options()[["user_header"]]) == tmp_files),
     3
   )
 
@@ -217,7 +217,7 @@ test_that("user_header precedence order is correct", {
     2
   )
   expect_equal(
-    which(!!mod$cpp_options()[["user_header"]] == tmp_files),
+    which(!!(mod$cpp_options()[["user_header"]]) == tmp_files),
     3
   )
 
