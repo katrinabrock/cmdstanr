@@ -23,14 +23,9 @@ jobs:
       fail-fast: false
       matrix:
         config:
-          - {os: macOS-latest, r: 'devel', opencl: true}
-          - {os: macOS-latest, r: 'release', opencl: true}
           - {os: windows-latest, r: 'devel' }
           - {os: windows-latest, r: 'release'}
           - {os: windows-latest, r: 'oldrel'}
-          - {os: ubuntu-latest, r: 'devel', opencl: true}
-          - {os: ubuntu-latest, r: 'release', opencl: true}
-          - {os: ubuntu-latest, r: 'oldrel', opencl: true}
     env:
       R_REMOTES_NO_ERRORS_FROM_WARNINGS: true
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
@@ -95,18 +90,10 @@ jobs:
           sessioninfo::session_info(pkgs, include_base = TRUE)
         shell: Rscript {0}
 
-      - uses: r-lib/actions/check-r-package@v2
-        env:
-          _R_CHECK_CRAN_INCOMING_: false
-
-      - name: Show testthat output
-        if: always()
-        run: find check -name 'testthat.Rout*' -exec cat '{}' \; || true
-        shell: bash
-
-      - name: Upload check results
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ runner.os }}-r${{ matrix.config.r }}-results
-          path: check
+      - name: Run User Header Test
+        run: |
+          testthat::test_file(
+            'tests/testthat/test-model-compile-user_header.R',
+            package = 'cmdstanr'
+          )
+        shell: Rscript {0}

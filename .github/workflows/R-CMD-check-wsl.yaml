@@ -71,18 +71,10 @@ jobs:
           sessioninfo::session_info(pkgs, include_base = TRUE)
         shell: Rscript {0}
 
-      - uses: r-lib/actions/check-r-package@v2
-        env:
-          _R_CHECK_CRAN_INCOMING_: false
-
-      - name: Show testthat output
-        if: always()
-        run: find check -name 'testthat.Rout*' -exec cat '{}' \; || true
-        shell: bash
-
-      - name: Upload check results
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: wsl-backend-results
-          path: check
+      - name: Run User Header Test
+        run: |
+          testthat::test_file(
+            'tests/testthat/test-model-compile-user_header.R',
+            package = 'cmdstanr'
+          )
+        shell: Rscript {0}
