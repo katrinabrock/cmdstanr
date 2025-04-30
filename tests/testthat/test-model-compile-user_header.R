@@ -4,7 +4,11 @@ file_that_exists <- "placeholder_exists"
 file_that_doesnt_exist <- "placeholder_doesnt_exist"
 withr::local_file(file_that_exists)
 
-w_path <- function(f) wsl_safe_path(absolute_path(f))
+w_path <- function(f) {
+  x <- sapply(f, function(fi) wsl_safe_path(absolute_path(fi)))
+  names(x) <- NULL
+  x
+}
 
 make_local_orig <- cmdstan_make_local()
 cmdstan_make_local(cpp_options = list("PRECOMPILED_HEADERS" = "false"))
@@ -204,7 +208,7 @@ test_that("user_header precedence order is correct", {
     .local_envir = parent.frame(3)
   ))
   print(tmp_files)
-  print(sapply(tmp_files, w_path))
+  print(w_path(tmp_files))
 
   # Case # 1: all 3 specified
   with_mocked_cli(
