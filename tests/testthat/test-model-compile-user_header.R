@@ -153,7 +153,7 @@ test_that("wsl path conversion is done as expected", {
       )
     }
   )
-  print(mod$cpp_options())
+
   # USER_HEADER is converted
   # user_header is NULL
   expect_equal(mod$cpp_options()[['USER_HEADER']],  w_path(tmp_file))
@@ -173,7 +173,7 @@ test_that("wsl path conversion is done as expected", {
       )
     }
   )
-  print(mod$cpp_options())
+
   # USER_HEADER is converted
   # user_header is unconverted
   expect_equal(mod$cpp_options()[['USER_HEADER']],  w_path(tmp_file))
@@ -193,7 +193,7 @@ test_that("wsl path conversion is done as expected", {
       )
     }
   )
-  print(mod$cpp_options())
+
 
   # In  other cases, in the *output* USER_HEADER is windows style user_header is not.
   # In this case, USER_HEADER is null.
@@ -207,8 +207,6 @@ test_that("user_header precedence order is correct", {
     fileext = ".hpp",
     .local_envir = parent.frame(3)
   ))
-  print(tmp_files)
-  print(w_path(tmp_files))
 
   # Case # 1: all 3 specified
   with_mocked_cli(
@@ -226,8 +224,6 @@ test_that("user_header precedence order is correct", {
       )
     }, "User header specified both")
   )
-  print(mod$cpp_options())
-  
   # In this case:
   # cpp_options[['USER_HEADER']] == tmp_files[1] <- actually used
   # cpp_options[['user_header']] == tmp_files[3] <- ignored
@@ -256,7 +252,6 @@ test_that("user_header precedence order is correct", {
       )
     }, "User header specified both")
   )
-  print(mod$cpp_options())
   # In this case:
   # cpp_options[['USER_HEADER']] == tmp_files[2]
   # cpp_options[['user_header']] == tmp_files[3]
@@ -285,8 +280,7 @@ test_that("user_header precedence order is correct", {
       )
     }, "User header specified both")
   )
-  print(mod$cpp_options())
-  # Same as above
+  # Same as Case #2
   expect_equal(
     match(!!(mod$cpp_options()[['USER_HEADER']]), w_path(tmp_files)),
     2
