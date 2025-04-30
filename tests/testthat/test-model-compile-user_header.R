@@ -204,7 +204,7 @@ test_that("user_header precedence order is correct", {
     .local_envir = parent.frame(3)
   ))
   print(tmp_files)
-  print(sapply(wpath, tmp_files))
+  print(sapply(tmp_files, w_path))
 
   # Case # 1: all 3 specified
   with_mocked_cli(
