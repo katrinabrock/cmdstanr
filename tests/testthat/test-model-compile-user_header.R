@@ -135,12 +135,12 @@ test_that("cmdstan_model works with user_header with mock", {
 })
 
 test_that("user_header precedence order is correct", {
-  tmp_files <- sapply(1:3, function(n) tempfile(fileext = ".hpp"))
+  tmp_files <- sapply(1:3, function(n) withr::local_tempfile(fileext = ".hpp"))
+  tmp_files <- c(tmp_files, sapply(tmp_files, function(f) wsl_safe_path(absolute_path(f))))
+  names(tmp_files) <- NULL
+  w_offset <- if(os_is_windows()) 3 else 0
   print(tmp_files)
-  w_tmp_files <- sapply(tmp_files, function(f) wsl_safe_path(absolute_path(f)))
   sapply(tmp_files, function(filename) cat(hpp, file = filename, sep = "\n"))
-  withr::defer(sapply(tmp_files, function(filename) file.remove(filename)))
-
   with_mocked_cli(
     compile_ret = list(status = 1),
     info_ret = list(),
@@ -163,11 +163,11 @@ test_that("user_header precedence order is correct", {
   # cpp_options[['user_header']] == tmp_files[3] <- ignored
   # tmp_files[2] is not stored
   expect_equal(
-    which(!!(mod$cpp_options()[['USER_HEADER']]) == w_tmp_files),
-    1
+    which(!!(mod$cpp_options()[['USER_HEADER']]) == tmp_files)[1],
+    1 + w_offset
   )
   expect_equal(
-    which(!!(mod$cpp_options()[['user_header']]) == w_tmp_files),
+    which(!!(mod$cpp_options()[['user_header']]) == tmp_files)[1],
     3
   )
 
@@ -191,11 +191,11 @@ test_that("user_header precedence order is correct", {
   # cpp_options[['user_header']] == tmp_files[3] <- ignored
   # tmp_files[2] is not stored
   expect_equal(
-    which(!!(mod$cpp_options()[["USER_HEADER"]]) == w_tmp_files),
-    2
+    which(!!(mod$cpp_options()[["USER_HEADER"]]) == tmp_files)[1],
+    2 + w_offset
   )
   expect_equal(
-    which(!!(mod$cpp_options()[["user_header"]]) == w_tmp_files),
+    which(!!(mod$cpp_options()[["user_header"]]) == tmp_files)[1],
     3
   )
 
@@ -216,11 +216,11 @@ test_that("user_header precedence order is correct", {
   print(mod$cpp_options())
   # Same as above
   expect_equal(
-    which(!!(mod$cpp_options()[["USER_HEADER"]]) == w_tmp_files),
-    2
+    which(!!(mod$cpp_options()[["USER_HEADER"]]) == tmp_files)[1],
+    2 + w_offset
   )
   expect_equal(
-    which(!!(mod$cpp_options()[["user_header"]]) == w_tmp_files),
+    which(!!(mod$cpp_options()[["user_header"]]) == tmp_files)[1],
     3
   )
 
